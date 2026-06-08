@@ -6,18 +6,19 @@ const INITIAL_PASSWORD = process.env.INITIAL_PASSWORD || 'Siesa2026*';
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || '12', 10);
 
 const usuarios = [
+  { email: 'daniel.caicedo@siesa.com',      nombre: 'Daniel Caicedo',          area: 'pruebas',              rol: 'admin' },
   { email: 'admin@siesa.com',      nombre: 'Administrador del Sistema',          area: 'Administración del Sistema',              rol: 'admin' },
-  { email: 'abermudez@siesa.com',  nombre: 'Angélica Bermúdez',                  area: 'RRHH',                                    rol: 'rrhh' },
-  { email: 'abuitrago@siesa.com',  nombre: 'Álvaro Buitrago',                    area: 'Soluciones IT',                           rol: 'firmante' },
-  { email: 'wsanchez@siesa.com',   nombre: 'Walther Sánchez',                    area: 'Soluciones IT',                           rol: 'firmante' },
-  { email: 'scasquete@siesa.com',  nombre: 'Shirley Casquete',                   area: 'Investigación y Desarrollo / Siesa Digital', rol: 'firmante' },
-  { email: 'dsolis@siesa.com',     nombre: 'Diana Solís',                        area: 'Administrativo y Financiero',             rol: 'firmante' },
-  { email: 'amquintero@siesa.com', nombre: 'Ángela María Quintero',              area: 'Administrativo y Financiero',             rol: 'firmante' },
-  { email: 'jmostacilla@siesa.com',nombre: 'José Wvarley Mostacilla Herrera',    area: 'BI',                                      rol: 'firmante' },
-  { email: 'jgonzalez@siesa.com',  nombre: 'Jaime González',                     area: 'Nube',                                    rol: 'firmante' },
-  { email: 'jsarango@siesa.com',   nombre: 'Juan Sebastián Arango',              area: 'Nube',                                    rol: 'firmante' },
-  { email: 'vcollazos@siesa.com',  nombre: 'Vanessa Collazos',                   area: 'Consultoría',                             rol: 'firmante' },
-  { email: 'arvera@siesa.com',     nombre: 'Andrea Raissa Tatiana Vera',         area: 'Soporte',                                 rol: 'firmante' },
+  { email: 'angelica.bermudez@siesa.com',  nombre: 'Angélica Bermúdez',                  area: 'RRHH',                                    rol: 'rrhh' },
+  { email: 'aebuitragoa@siesa.com',  nombre: 'Álvaro Buitrago',                    area: 'Soluciones IT',                           rol: 'firmante' },
+  { email: 'wsa@siesa.com',   nombre: 'Walther Sánchez',                    area: 'Soluciones IT',                           rol: 'firmante' },
+  { email: 'scasquetev@siesa.com',  nombre: 'Shirley Casquete',                   area: 'Investigación y Desarrollo / Siesa Digital', rol: 'firmante' },
+  { email: 'ggarces@zeustecnologia.com',     nombre: 'Diana Solís',                        area: 'Administrativo y Financiero',             rol: 'firmante' },
+  { email: 'amquinteros@siesa.com', nombre: 'Ángela María Quintero',              area: 'Administrativo y Financiero',             rol: 'firmante' },
+  { email: 'jwm@siesa.com',nombre: 'José Wvarley Mostacilla Herrera',    area: 'BI',                                      rol: 'firmante' },
+  { email: 'jagonzalezm@siesa.com',  nombre: 'Jaime González',                     area: 'Nube',                                    rol: 'firmante' },
+  { email: 'juan.arango@siesa.com',   nombre: 'Juan Sebastián Arango',              area: 'Nube',                                    rol: 'firmante' },
+  { email: 'vanessa.collazos@siesa.com',  nombre: 'Vanessa Collazos',                   area: 'Consultoría',                             rol: 'firmante' },
+  { email: 'andrea.vera@siesa.com',     nombre: 'Andrea Raissa Tatiana Vera',         area: 'Soporte',                                 rol: 'firmante' },
 ];
 
 async function seed() {
