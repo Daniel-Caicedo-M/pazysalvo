@@ -9,9 +9,12 @@ import actasRoutes from './routes/actas.js';
 import firmasRoutes from './routes/firmas.js';
 import usuariosRoutes from './routes/usuarios.js';
 import recordatoriosRoutes from './routes/recordatorios.js';
+import documentosRoutes from './routes/documentos.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '4000', 10);
+
+app.set('trust proxy', 1);
 
 app.use(helmet());
 app.use(express.json({ limit: '1mb' }));
@@ -34,6 +37,7 @@ app.use('/api/actas', actasRoutes);
 app.use('/api/firmas', firmasRoutes);
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/recordatorios', recordatoriosRoutes);
+app.use('/api/documentos', documentosRoutes);
 
 app.use((req, res) => res.status(404).json({ error: 'ruta no encontrada' }));
 app.use((err, req, res, next) => {

@@ -57,6 +57,47 @@ export const api = {
     request('/recordatorios/enviar', { method: 'POST', body: { ignorarUmbral } }),
   recordarAUsuario: (usuarioId) =>
     request(`/recordatorios/enviar/${usuarioId}`, { method: 'POST' }),
+
+  // documentos (PDFs)
+  listarDocumentos: () => request('/documentos'),
+  regenerarPdf: (actaId) => request(`/documentos/${actaId}/regenerar`, { method: 'POST' }),
 };
+
+// Descarga del PDF desde la BD
+export async function descargarPdf(actaId, codigo) {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${API_URL}/documentos/${actaId}/pdf`, {
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || `Error ${res.status}`);
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${codigo}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
+// Abre el PDF inline en una pestaña nueva
+export async function verPdf(actaId) {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${API_URL}/documentos/${actaId}/ver`, {
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || `Error ${res.status}`);
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
 
 export { APIError };

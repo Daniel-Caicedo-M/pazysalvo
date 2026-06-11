@@ -8,6 +8,7 @@ import ActaDetalle from './pages/ActaDetalle.jsx';
 import Usuarios from './pages/Usuarios.jsx';
 import Pendientes from './pages/Pendientes.jsx';
 import Recordatorios from './pages/Recordatorios.jsx';
+import Documentos from './pages/Documentos.jsx';
 
 function ProtectedRoute({ children, roles }) {
   const { usuario, loading } = useAuth();
@@ -28,6 +29,7 @@ function AppRoutes() {
       <Route path="/nueva" element={<ProtectedRoute roles={['rrhh', 'admin']}><NuevaActa /></ProtectedRoute>} />
       <Route path="/actas/:id" element={<ProtectedRoute><ActaDetalle /></ProtectedRoute>} />
       <Route path="/recordatorios" element={<ProtectedRoute roles={['admin', 'rrhh']}><Recordatorios /></ProtectedRoute>} />
+      <Route path="/documentos" element={<ProtectedRoute roles={['admin']}><Documentos /></ProtectedRoute>} />
       <Route path="/usuarios" element={<ProtectedRoute roles={['admin']}><Usuarios /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

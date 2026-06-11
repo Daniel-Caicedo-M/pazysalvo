@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS actas (
   estado            VARCHAR(50) NOT NULL DEFAULT 'borrador',
   creada_por        INTEGER REFERENCES usuarios(id),
   hash_contenido    VARCHAR(64),
+  pdf_documento     BYTEA,
+  pdf_generado_at   TIMESTAMPTZ,
   finalizada_at     TIMESTAMPTZ,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -45,6 +47,11 @@ CREATE TABLE IF NOT EXISTS actas (
 CREATE INDEX IF NOT EXISTS idx_actas_codigo ON actas(codigo);
 CREATE INDEX IF NOT EXISTS idx_actas_estado ON actas(estado);
 CREATE INDEX IF NOT EXISTS idx_actas_cc ON actas(colaborador_cc);
+
+-- Migración incremental: columnas de PDF si la tabla ya existía
+ALTER TABLE actas ADD COLUMN IF NOT EXISTS pdf_documento BYTEA;
+ALTER TABLE actas ADD COLUMN IF NOT EXISTS pdf_generado_at TIMESTAMPTZ;
+ALTER TABLE actas DROP COLUMN IF EXISTS pdf_s3_key;
 
 -- Responsables requeridos por acta (snapshot al momento de crearla)
 CREATE TABLE IF NOT EXISTS acta_responsables (

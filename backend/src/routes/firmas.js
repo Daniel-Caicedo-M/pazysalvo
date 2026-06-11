@@ -4,6 +4,7 @@ import { query, withTransaction } from '../db/index.js';
 import { autenticar } from '../middleware/auth.js';
 import { generarHashFirma, verificarCadenaFirmas } from '../services/firma.js';
 import { registrarAuditoria } from '../services/auditoria.js';
+import { generarPdfActa } from '../services/pdf.js';
 
 const router = Router();
 
@@ -71,6 +72,26 @@ async function firmarActa(client, { actaId, usuario, observaciones, ipOrigen, us
       [actaId]
     );
     acta_final = upd.rows[0];
+
+    // Generar PDF y guardarlo en la BD (fuera de la transacción, best-effort)
+    const todasFirmas = await client.query(
+      `SELECT usuario_email, usuario_nombre, area, hash_acta, hash_firma, hash_prev, observaciones, firmado_at
+       FROM firmas WHERE acta_id = $1 ORDER BY firmado_at ASC`, [actaId]
+    );
+    const actaSnapshot = { ...acta_final };
+    const firmasSnapshot = todasFirmas.rows;
+    setImmediate(async () => {
+      try {
+        const pdfBuffer = await generarPdfActa(actaSnapshot, firmasSnapshot);
+        await query(
+          `UPDATE actas SET pdf_documento = $1, pdf_generado_at = NOW() WHERE id = $2`,
+          [pdfBuffer, actaSnapshot.id]
+        );
+        console.log(`[pdf] guardado en BD: ${actaSnapshot.codigo} (${Math.round(pdfBuffer.length / 1024)} KB)`);
+      } catch (err) {
+        console.error('[pdf] error generando/guardando:', err.message);
+      }
+    });
   }
   return { firma: ins.rows[0], acta: acta_final };
 }
