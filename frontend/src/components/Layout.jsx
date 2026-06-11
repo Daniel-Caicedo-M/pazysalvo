@@ -117,7 +117,7 @@ c-138 286 -471 431 -918 399 -406 -29 -658 -169 -796 -443 -36 -71 -83 -235 -83
 
 -450 448 -997 995z"/>
 </svg>
-            <span className="font-semibold text-brand">Siesa</span>
+            
           </Link>
 
           <nav className="hidden md:flex items-center gap-1 ml-6">
