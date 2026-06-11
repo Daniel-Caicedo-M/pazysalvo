@@ -95,3 +95,51 @@ function diasDesde(fecha) {
   if (dias === 1) return '1 día';
   return `${dias} días`;
 }
+
+/**
+ * Plantilla HTML de notificación de nueva acta creada.
+ */
+export function plantillaNuevaActa({ nombreResponsable, acta }) {
+  const linkActa = `${APP_URL}/actas/${acta.id}`;
+  const fechaRetiro = acta.fecha_retiro
+    ? new Date(acta.fecha_retiro).toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    : '—';
+
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#FAFBFC;font-family:-apple-system,system-ui,sans-serif;color:#0A0A1A;">
+  <div style="max-width:560px;margin:0 auto;padding:32px 16px;">
+    <div style="background:white;border:1px solid #E5E7EB;border-radius:18px;padding:32px;">
+      <div style="font-size:18px;font-weight:700;color:#0E79FD;margin-bottom:24px;">Siesa</div>
+      <p style="font-family:Georgia,serif;font-size:30px;line-height:1.15;margin:0 0 8px;color:#0A0A1A;">Nueva acta por firmar</p>
+      <p style="color:#6B7280;font-size:15px;margin:0 0 24px;">
+        Hola ${escapeHtml(nombreResponsable)}, se ha creado una nueva acta de Paz y Salvo que requiere tu firma.
+      </p>
+      <div style="border:1px solid #E5E7EB;border-radius:12px;padding:18px;margin:0 0 24px;">
+        <div style="font-family:'Courier New',monospace;font-size:11px;color:#6B7280;">${escapeHtml(acta.codigo)}</div>
+        <div style="font-weight:600;font-size:17px;color:#0A0A1A;margin-top:4px;">${escapeHtml(acta.colaborador_nombre)}</div>
+        <div style="font-size:13px;color:#6B7280;margin-top:2px;">
+          CC ${escapeHtml(acta.colaborador_cc)} · ${escapeHtml(acta.cargo || '')} · ${escapeHtml(acta.area || '')}
+        </div>
+        <div style="font-size:13px;color:#6B7280;margin-top:2px;">
+          Retiro ${escapeHtml(acta.tipo_retiro || '')} · Fecha: ${escapeHtml(fechaRetiro)}
+        </div>
+      </div>
+      <div style="text-align:center;margin:24px 0 8px;">
+        <a href="${linkActa}" style="display:inline-block;background:#0A0A1A;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:500;font-size:14px;">Revisar y firmar →</a>
+      </div>
+      <p style="font-size:12px;color:#9CA3AF;text-align:center;margin:24px 0 0;">También puedes verla en tu bandeja de pendientes.</p>
+      <hr style="border:none;border-top:1px solid #E5E7EB;margin:24px 0;">
+      <p style="font-size:11px;color:#9CA3AF;text-align:center;margin:0;">Notificación automática del sistema Paz y Salvo de Siesa.</p>
+    </div>
+  </div>
+</body></html>`;
+
+  const text = `Nueva acta por firmar\n\n` +
+    `Hola ${nombreResponsable}, se ha creado una nueva acta de Paz y Salvo que requiere tu firma:\n\n` +
+    `${acta.codigo} · ${acta.colaborador_nombre} (CC ${acta.colaborador_cc})\n` +
+    `${acta.cargo || ''} · ${acta.area || ''} · Retiro ${acta.tipo_retiro || ''} · ${fechaRetiro}\n\n` +
+    `Revisar y firmar: ${linkActa}`;
+
+  return { html, text };
+}

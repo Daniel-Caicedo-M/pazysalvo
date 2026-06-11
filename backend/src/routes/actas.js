@@ -5,6 +5,7 @@ import { query, withTransaction } from '../db/index.js';
 import { autenticar, requiereRol } from '../middleware/auth.js';
 import { calcularHashActa } from '../services/firma.js';
 import { registrarAuditoria } from '../services/auditoria.js';
+import { enviarCorreo, plantillaNuevaActa } from '../services/email.js';
 
 const router = Router();
 
@@ -97,6 +98,45 @@ router.post('/', autenticar, requiereRol('rrhh', 'admin'), async (req, res) => {
       usuarioId: req.user.id, accion: 'acta_creada', entidad: 'acta', entidadId: result.id,
       detalle: { codigo: result.codigo, colaborador: result.colaborador_nombre }, ipOrigen: req.ip,
     });
+
+    // Notificar de inmediato a todos los responsables (best-effort, no bloquea la respuesta)
+    setImmediate(async () => {
+      try {
+        const responsablesRes = await query(
+          `SELECT u.id, u.email, u.nombre
+           FROM acta_responsables ar
+           INNER JOIN usuarios u ON u.id = ar.usuario_id
+           WHERE ar.acta_id = $1 AND u.activo = TRUE`,
+          [result.id]
+        );
+        for (const resp of responsablesRes.rows) {
+          const { html, text } = plantillaNuevaActa({
+            nombreResponsable: resp.nombre,
+            acta: result,
+          });
+          const r = await enviarCorreo({
+            to: resp.email,
+            subject: `Nueva acta de Paz y Salvo por firmar · ${result.codigo}`,
+            html, text,
+          });
+          if (r.ok) {
+            await registrarAuditoria({
+              usuarioId: resp.id,
+              accion: 'notificacion_nueva_acta_enviada',
+              entidad: 'acta',
+              entidadId: result.id,
+              detalle: { codigo: result.codigo },
+            });
+          } else {
+            console.error(`[email] fallo notificando a ${resp.email}:`, r.error);
+          }
+        }
+        console.log(`[email] notificaciones de nueva acta enviadas: ${responsablesRes.rows.length}`);
+      } catch (err) {
+        console.error('[email] error notificando nueva acta:', err.message);
+      }
+    });
+
     res.status(201).json({ acta: result });
   } catch (err) {
     console.error('[actas] error creando:', err);
